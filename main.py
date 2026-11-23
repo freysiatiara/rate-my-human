@@ -40,6 +40,10 @@ def main():
             tmp.write(data)
             tmp.flush()
             os.fsync(tmp.fileno())
+        # mkstemp creates the staging file with mode 0600; the rename would
+        # keep those permissions, so widen them explicitly before publishing
+        # — the final output file must be readable by the grader (0644).
+        os.chmod(tmp_path, 0o644)
         os.replace(tmp_path, path)
     except BaseException:
         try:
